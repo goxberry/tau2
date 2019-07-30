@@ -35,7 +35,9 @@
 #include <TauMetaData.h>
 #include <Profiler.h>
 
-#ifdef HAVE_TR1_HASH_MAP
+#ifdef TAU_USE_STDCXX11
+#include <functional>
+#elif defined(HAVE_TR1_HASH_MAP)
 #include <tr1/functional>
 #endif /* HAVE_TR1_HASH_MAP */
 
@@ -185,7 +187,11 @@ extern "C" void Tau_ompt_resolve_callsite_eagerly(unsigned long addr, char * res
 }
 
 extern "C" size_t Tau_util_return_hash_of_string(const char * input) {
+  #ifdef TAU_USE_STDCXX11
+  std::hash<std::string> hash_fn;
+  #else
   std::tr1::hash<std::string> hash_fn;
+  #endif
   std::string s(input);
   return hash_fn(s);
 }
